@@ -1,6 +1,6 @@
 // main.cpp
 #include <node.h>
-#include <pocketsphinx.h>
+#include "pocketsphinx.h"
 
 namespace robot {
 
@@ -38,7 +38,7 @@ void CreateFunction(const FunctionCallbackInfo<Value>& args) {
 
     /* Open audio file and start feeding it into the decoder */
     fh = fopen("myrecording.wav", "rb");
-    rv = ps_start_utt(ps, "goforward");
+    rv = ps_start_utt(ps);
     while (!feof(fh)) {
     size_t nsamp;
     nsamp = fread(buf, 2, 512, fh);
@@ -47,10 +47,13 @@ void CreateFunction(const FunctionCallbackInfo<Value>& args) {
     rv = ps_end_utt(ps);
 
     /* Get the result and print it */
-    hyp = ps_get_hyp(ps, &score, &uttid);
-    if (hyp == NULL)
-    return 1;
-    printf("Recognized: %s with prob %d\n", hyp, ps_get_prob (ps, NULL));
+    hyp = ps_get_hyp(ps, &score);
+    if (hyp == NULL) {
+        args.GetReturnValue().Set(1);
+        return;
+    }
+
+    printf("Recognized: %s with prob %d\n", hyp, ps_get_prob(ps));
 
     /* Free the stuff */
     fclose(fh);
