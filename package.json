@@ -4,10 +4,11 @@
   "description": "",
   "main": "demo/main.js",
   "scripts": {
-    "install": "mkdir build && cd build && cmake-js compile -d ..",
+    "install": "mkdir build && cd build && cmake-js build deps -d .. && cmake-js compile -d ..",
+    "build-deps": "cd build && cmake-js build deps -d ..",
     "compile": "cd build && cmake-js compile -d ..",
     "dialog": "electron test.js",
-    "test": "export ELECTRON_ENABLE_LOGGING=true && electron main.js"
+    "test": "export ELECTRON_RUN_AS_NODE=true && electron main.js"
   },
   "cmake-js": {
     "runtime": "electron",
