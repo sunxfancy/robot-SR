@@ -10,13 +10,13 @@ if (UNIX)
     set(POCKETSPHINX_BUILD_COMMAND make check)
     set(POCKETSPHINX_INSTALL_COMMAND make install)
 else()
-    set(SPHINXBASE_CONFIGURE_COMMAND "")
+    set(SPHINXBASE_CONFIGURE_COMMAND echo config)
     set(SPHINXBASE_BUILD_COMMAND devenv sphinxbase.sln /Build "Release")
-    set(SPHINXBASE_INSTALL_COMMAND "")
+    set(SPHINXBASE_INSTALL_COMMAND cp_win32.bat)
 
-    set(POCKETSPHINX_CONFIGURE_COMMAND "")
+    set(POCKETSPHINX_CONFIGURE_COMMAND echo config)
     set(POCKETSPHINX_BUILD_COMMAND devenv pocketsphinx.sln /Build "Release")
-    set(POCKETSPHINX_INSTALL_COMMAND "")
+    set(POCKETSPHINX_INSTALL_COMMAND cp_win32.bat)
 endif()
 
 
