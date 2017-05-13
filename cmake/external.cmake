@@ -2,11 +2,19 @@ include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
 set (third_party_install_path ${CMAKE_CURRENT_SOURCE_DIR}/extlib)
 
 if (UNIX)
-    set(SPHINXBASE_CONFIGURE_COMMAND ./autogen.sh --without-python --prefix=${third_party_install_path})
+    if (LINUX) 
+        set(SPHINXBASE_CONFIGURE_COMMAND ./autogen.sh --without-python CFLAGS='-O2 -fPIC -DNDEBUG' --prefix=${third_party_install_path})
+    else()
+        set(SPHINXBASE_CONFIGURE_COMMAND ./autogen.sh --without-python --prefix=${third_party_install_path})
+    endif()
     set(SPHINXBASE_BUILD_COMMAND make check)
     set(SPHINXBASE_INSTALL_COMMAND make install)
 
-    set(POCKETSPHINX_CONFIGURE_COMMAND ./autogen.sh --without-python --prefix=${third_party_install_path})
+    if (LINUX) 
+        set(POCKETSPHINX_CONFIGURE_COMMAND ./autogen.sh --without-python CFLAGS='-O2 -fPIC -DNDEBUG' --prefix=${third_party_install_path})
+    else()
+        set(POCKETSPHINX_CONFIGURE_COMMAND ./autogen.sh --without-python --prefix=${third_party_install_path})
+    endif()
     set(POCKETSPHINX_BUILD_COMMAND make check)
     set(POCKETSPHINX_INSTALL_COMMAND make install)
 else()
@@ -20,7 +28,7 @@ else()
 endif()
 
 
-ExternalProject_Add(sphinxbase 
+ExternalProject_Add(sphinxbase_proj 
     DOWNLOAD_DIR third_party/
 	GIT_REPOSITORY https://github.com/cmusphinx/sphinxbase
     SOURCE_DIR third_party/sphinxbase/
@@ -34,7 +42,7 @@ ExternalProject_Add(sphinxbase
 )
 
 
-ExternalProject_Add(pocketsphinx 
+ExternalProject_Add(pocketsphinx_proj 
     DOWNLOAD_DIR third_party/
 	GIT_REPOSITORY https://github.com/cmusphinx/pocketsphinx
     SOURCE_DIR third_party/pocketsphinx/
@@ -45,11 +53,11 @@ ExternalProject_Add(pocketsphinx
     INSTALL_COMMAND ${POCKETSPHINX_INSTALL_COMMAND}
     BUILD_ALWAYS 0
     EXCLUDE_FROM_ALL 1
-    DEPENDS sphinxbase
+    DEPENDS sphinxbase_proj
 )
 
 
 
 ADD_CUSTOM_TARGET(deps
-	DEPENDS sphinxbase pocketsphinx
+	DEPENDS sphinxbase_proj pocketsphinx_proj
 )

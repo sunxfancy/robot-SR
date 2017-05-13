@@ -1,5 +1,6 @@
 // main.cpp
 #include <node.h>
+#include <pocketsphinx.h>
 
 namespace robot {
 
@@ -20,17 +21,43 @@ void MyFunction(const FunctionCallbackInfo<Value>& args) {
 void CreateFunction(const FunctionCallbackInfo<Value>& args) {
     Isolate* isolate = args.GetIsolate();
 
-    Local<FunctionTemplate> tpl = FunctionTemplate::New(isolate, MyFunction);
-    Local<Function> fn = tpl->GetFunction();
+    ps_decoder_t *ps;
+    cmd_ln_t *config;
+    FILE *fh;
+    char const *hyp, *uttid;
+    int16 buf[512];
+    int rv;
+    int32 score;
 
-    // omit this to make it anonymous
-    fn->SetName(String::NewFromUtf8(isolate, "theFunction"));
+    /* Initializing of the configuration */
+    config = cmd_ln_init(NULL, ps_args(), TRUE,
+        "-samprate", "8000",
+        "-jsgf", "test.jsgf",
+        NULL);
+    ps = ps_init(config);
 
-    args.GetReturnValue().Set(fn);
+    /* Open audio file and start feeding it into the decoder */
+    fh = fopen("myrecording.wav", "rb");
+    rv = ps_start_utt(ps, "goforward");
+    while (!feof(fh)) {
+    size_t nsamp;
+    nsamp = fread(buf, 2, 512, fh);
+    rv = ps_process_raw(ps, buf, nsamp, FALSE, FALSE);
+    }
+    rv = ps_end_utt(ps);
+
+    /* Get the result and print it */
+    hyp = ps_get_hyp(ps, &score, &uttid);
+    if (hyp == NULL)
+    return 1;
+    printf("Recognized: %s with prob %d\n", hyp, ps_get_prob (ps, NULL));
+
+    /* Free the stuff */
+    fclose(fh);
+    ps_free(ps);
+    
+    args.GetReturnValue().Set(0);
 }
-
-extern void DetectFace(const FunctionCallbackInfo<Value>& args);
-extern void DetectDetail(const FunctionCallbackInfo<Value>& args);
 
 void Init(Local<Object> exports) {
     NODE_SET_METHOD(exports, "createFunction", CreateFunction);

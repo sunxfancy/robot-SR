@@ -5,6 +5,7 @@
   "main": "demo/main.js",
   "scripts": {
     "install": "mkdir build && cd build && cmake-js build deps -d .. && cmake-js compile -d ..",
+    "build": "cd build && cmake-js build -d ..",
     "build-deps": "cd build && cmake-js build deps -d ..",
     "compile": "cd build && cmake-js compile -d ..",
     "dialog": "electron test.js",
