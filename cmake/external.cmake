@@ -12,11 +12,11 @@ if (UNIX)
 else()
     set(SPHINXBASE_CONFIGURE_COMMAND devenv sphinxbase.sln /upgrade)
     set(SPHINXBASE_BUILD_COMMAND devenv sphinxbase.sln /build "Release|x64")
-    set(SPHINXBASE_INSTALL_COMMAND cp_win32.bat)
+    set(SPHINXBASE_INSTALL_COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/script/copylib_sb.bat)
 
     set(POCKETSPHINX_CONFIGURE_COMMAND devenv pocketsphinx.sln /upgrade)
     set(POCKETSPHINX_BUILD_COMMAND devenv pocketsphinx.sln /build "Release|x64")
-    set(POCKETSPHINX_INSTALL_COMMAND cp_win32.bat)
+    set(POCKETSPHINX_INSTALL_COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/script/copylib_ps.bat)
 endif()
 
 
